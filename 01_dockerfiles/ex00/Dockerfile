@@ -7,5 +7,5 @@ RUN apk update && apk upgrade && apk add vim
 ENTRYPOINT vim
 
 
-# docker build it ex00 .
+# docker build -t ex00 .
 # docker run --rm -it ex00
