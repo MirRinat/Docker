@@ -1,20 +1,26 @@
-FROM ruby
+FROM ruby:2.7.0
 
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && apt-get update && apt-get install -y  build-essential nodejs yarn && rm -rf /var/lib/apt/lists/*
+ONBUILD RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+	echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+	apt update -y && apt upgrade -y && \
+	apt install -y yarn && \
+	yarn install --check-files && yarn upgrade && \
+	yarn add jquery@3.4.1 bootstrap@3.4.1 && \
+	gem install rails && \
+	gem install bundler:2.1.4
 
-RUN gem install rails bundle
+#git clone https://github.com/mhartl/sample_app_6th_ed.git app
+ONBUILD COPY app /opt/app
+ONBUILD WORKDIR /opt/app
 
-COPY app /opt/app
-WORKDIR /opt/app
+ONBUILD EXPOSE 3000
 
-ONBUILD RUN yarn install --check-files
-ONBUILD RUN bundle update --bundler
-ONBUILD RUN bundle install
-ONBUILD RUN rails db:migrate
-ONBUILD RUN rails db:seed
-
+ONBUILD RUN bundle update --bundler && \
+	bundle install --without production && \
+	yarn install --check-files
+ONBUILD RUN bundle exec rake db:migrate
+ONBUILD RUN bundle exec rake db:seed
 #docker build -t ft-rails:on-build .
 #docker build -t ex02 -f Dockerfile_main .
 #docker run -it --rm -p 3000:3000 ex02
+

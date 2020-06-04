@@ -33,7 +33,7 @@ ENTRYPOINT  service ssh start && \
 
 # docker build --build-arg GITLAB_IP=$(docker-machine ip Char) -t ex03 .
 # docker run --rm -it -p 8000:443 -p 8022:22 --privileged ex03
-
+# https://192.168.99.X:8000
 #HTTPS
 # env GIT_SSL_NO_VERIFY=true git clone https://$(docker-machine ip Char):8000/root/test.git
 
